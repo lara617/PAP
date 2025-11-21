@@ -15,3 +15,6 @@ y
 .firebaserc
 firebase.json
 .firebase
+static/js/firebase_auth.js
+static/js/firebase_db.js
+static/js/firebase_storage.js
