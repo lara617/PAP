@@ -1,0 +1,11 @@
+# Enforce consistent line endings in the repository
+# Normalize text files to LF in the repository; checkouts follow local Git settings
+* text=auto eol=lf
+
+# Ensure common text file types are treated as text
+*.py text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.csv text eol=lf

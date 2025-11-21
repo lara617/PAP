@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.env
+.vscode/
+.history/
+*.code-workspace
+.DS_Store
+instance/
+projeto-pap-284ca-firebase-adminsdk-fbsvc-41e8ef91e8.json
+y 
+.firebaserc
+firebase.json
+.firebase
