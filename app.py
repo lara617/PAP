@@ -1,64 +1,73 @@
-from flask import Flask, render_template, request, redirect, url_for
+# app.py
+from flask import Flask, render_template, request, jsonify, url_for
+# importa as funções do db_service
+from services.db_service import save_or_update_user_profile, save_questionario
+# importa gerar_profissoes se ainda precisares da IA
 from services.ai_service import gerar_profissoes
-import firebase_admin
-from firebase_admin import credentials, firestore
 
 app = Flask(__name__)
-
-# 🔥 Inicializar Firebase Admin
-cred = credentials.Certificate('projeto-pap-284ca-firebase-adminsdk-fbsvc-41e8ef91e8.json')
-firebase_admin.initialize_app(cred)
-db = firestore.client()
-
-
-app = Flask(__name__)
-
-# ------------------------
-# Rotas principais
-# ------------------------
 
 @app.route('/')
 def landing():
     return render_template('index.html')
 
-
-@app.route("/perfil")
-def perfil():
-    return render_template("perfil.html")
-
-
-@app.route('/questionario', methods=['GET', 'POST'])
+@app.route("/questionario")
 def questionario():
-    if request.method == 'POST':
+    return render_template("questionario.html")
 
-        # Recebe dados do form
-        data = request.form.to_dict(flat=False)
-        user_id = data.pop('user_id', [None])[0]
-
-        # Salvar no Firestore
-        db.collection('questionarios').document(user_id).set(data)
-
-        return redirect(url_for('chat'))
-
-    return render_template('questionario.html')
+@app.route("/save_questionario", methods=["POST"])
+def save_questionario_route():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    answers = data.get("answers")
+    if user_id and answers:
+        save_questionario(user_id, answers)
+        return jsonify({"status": "ok"}), 200
+    return jsonify({"status": "error"}), 400
 
 
 @app.route('/chat')
 def chat():
-    return render_template("chat.html")
+    return render_template('chat.html')
 
+@app.route('/perfil')
+def perfil():
+    return render_template('perfil.html')
 
-@app.route('/chat_process', methods=['POST'])
-def chat_process():
-    respostas = request.form.to_dict(flat=False)
-    uid = respostas.get('user_id', [None])[0]
+# API que recebe o questionário em JSON
+@app.route('/api/questionario', methods=['POST'])
+def api_questionario():
+    payload = request.get_json()
+    if not payload:
+        return jsonify({'error': 'JSON body required'}), 400
 
-    resultado = gerar_profissoes(
-        respostas, 
-        area=respostas.get('area', [None])[0]
-    )
+    user_id = payload.get('user_id') or payload.get('uid')
+    if not user_id:
+        return jsonify({'error': 'user_id missing'}), 400
 
-    return render_template('chat.html', resultado=resultado)
+    # Extrai informações pessoais (nome, genero, data_nasc, etc.) se existirem
+    personal_keys = [
+        'nome', 'genero', 'data_nasc', 'idade', 'formacao', 'email',
+        'telefone', 'objetivo_profissional', 'preferencia_geografica'
+    ]
+    profile_data = {k: payload[k] for k in personal_keys if k in payload and payload[k] not in (None, '')}
+
+    try:
+        # Guarda/atualiza perfil (merge)
+        if profile_data:
+            save_or_update_user_profile(user_id, profile_data)
+
+        # Guarda questionário completo
+        save_questionario(user_id, payload)
+
+        # Opcional: gerar profissões com AI (se quiseres usar já)
+        # resultado = gerar_profissoes(payload)  # se a função espera o payload
+        # podes guardar resultado também se quiseres
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({'status': 'ok', 'redirect': url_for('chat')}), 200
 
 
 if __name__ == '__main__':

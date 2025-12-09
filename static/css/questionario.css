@@ -1,108 +1,66 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #eef1f5;
-    margin: 0;
-    padding-bottom: 80px;
-}
-
 .questionario-container {
-    max-width: 900px;
-    background: white;
-    margin: 40px auto;
-    padding: 35px;
-    border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
 }
 
 h1 {
-    text-align: center;
-    margin-bottom: 25px;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-h2 {
-    margin-top: 30px;
-    margin-bottom: 15px;
+.question-block {
+  margin-bottom: 30px; /* Espaço maior entre perguntas */
 }
 
-.bloco {
-    margin-top: 20px;
+.question-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
-.subtitulo {
-    font-weight: bold;
-    font-size: 15px;
-    margin-top: 18px;
-    display: block;
+/* Cada opção fica em linha separada */
+.scale-options label,
+.radio-options label,
+.checkbox-options label {
+  display: block;
+  margin-bottom: 8px;
+  cursor: pointer;
 }
 
-input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #bbb;
-    margin-top: 5px;
-    box-sizing: border-box;
+/* Inputs escondidos */
+.scale-options input[type="radio"],
+.radio-options input[type="radio"],
+.checkbox-options input[type="checkbox"] {
+  margin-right: 10px;
 }
 
-/* Respostas verticais alinhadas à esquerda */
-.opcoes-verticais label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-}
-
-/* Grid organizado para checkboxes */
-.opcoes-colunas {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 20px;
-    margin-top: 8px;
-}
-
-/* Botão enviar */
+/* Botão de enviar */
 .btn-enviar {
-    margin-top: 30px;
-    width: 100%;
-    padding: 15px;
-    border: none;
-    background: #4a5bd2;
-    color: white;
-    font-size: 18px;
-    border-radius: 12px;
-    cursor: pointer;
+  display: block;
+  margin: 30px auto 0 auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .btn-enviar:hover {
-    background: #3747a5;
+  background-color: #45a049;
 }
 
-/* Footer fixo */
-.footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+/* Responsividade */
+@media (max-width: 768px) {
+  .questionario-container {
+    padding: 15px;
+  }
+
+  .btn-enviar {
     width: 100%;
-    background: #fff;
-    border-top: 1px solid #ccc;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
-}
-
-.footer button {
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    color: #4C7CF2;
-    padding: 6px 12px;
-    border-radius: 8px;
-    transition: background 0.2s;
-    border: none;
-    background: transparent;
-}
-
-.footer button:hover {
-    background: rgba(76,124,242,0.1);
+  }
 }

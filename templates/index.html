@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
+    <!-- CDN compat (coloca isto no index.html, antes de carregar firebase_auth.js) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+<!-- depois carrega o teu script -->
+<script src="{{ url_for('static', filename='js/firebase_auth.js') }}"></script>
+
 <div class="container">
 
     <h1>Descobre a tua Profissão</h1>
