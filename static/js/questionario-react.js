@@ -39,17 +39,22 @@ const questions = [
   { id: 27, text: "Consigo tomar decisões rapidamente quando preciso.", dimension: "Soc", type: "scale" },
   { id: 28, text: "Sou bom a compreender instruções e segui-las corretamente.", dimension: "Org", type: "scale" },
 
-  // --- Preferências, Selects e Exercícios ---
-  { id: 29, text: "Prefiro ambientes calmos e estruturados.", dimension: "Ambiente_Calmo", type: "radio" },
-  { id: 30, text: "Prefiro ambientes dinâmicos e com muita interação.", dimension: "Ambiente_Dinamico", type: "radio" },
-  { id: 31, text: "Gosto de trabalhar em interior, com computador.", dimension: "Interior", type: "radio" },
-  { id: 32, text: "Gosto de trabalhar em exterior ou em movimento.", dimension: "Exterior", type: "radio" },
-  { id: 33, text: "Prefiro trabalhos criativos e flexíveis.", dimension: "Criatividade", type: "radio" },
-  { id: 34, text: "Prefiro trabalhos com regras claras e objetivos definidos.", dimension: "Estruturado", type: "radio" },
-  { id: 35, text: "Depois do 12.º ano, gostaria de:", dimension: "Objetivo", type: "select", options: ["Trabalhar", "Estudar mais", "Não sei"] },
-  { id: 36, text: "O que valorizo mais numa área profissional?", dimension: "Valores", type: "select", options: ["Estabilidade", "Criatividade", "Remuneração", "Ajudar pessoas", "Tecnologia", "Variedade", "Outro"] },
+  // Preferências (29–34 agora com escala)
+  { id: 29, text: "Prefiro ambientes calmos e estruturados.", dimension: "Ambiente_Calmo", type: "scale" },
+  { id: 30, text: "Prefiro ambientes dinâmicos e com muita interação.", dimension: "Ambiente_Dinamico", type: "scale" },
+  { id: 31, text: "Gosto de trabalhar em interior, com computador.", dimension: "Interior", type: "scale" },
+  { id: 32, text: "Gosto de trabalhar em exterior ou em movimento.", dimension: "Exterior", type: "scale" },
+  { id: 33, text: "Prefiro trabalhos criativos e flexíveis.", dimension: "Criatividade", type: "scale" },
+  { id: 34, text: "Prefiro trabalhos com regras claras e objetivos definidos.", dimension: "Estruturado", type: "scale" },
 
-  // --- Exercícios ---
+  // Selects
+  { id: 35, text: "Depois do 12.º ano, gostaria de:", dimension: "Objetivo", type: "select",
+    options: ["Trabalhar", "Estudar mais", "Não sei"] },
+
+  { id: 36, text: "O que valorizo mais numa área profissional?", dimension: "Valores", type: "select",
+    options: ["Estabilidade", "Criatividade", "Remuneração", "Ajudar pessoas", "Tecnologia", "Variedade", "Outro"] },
+
+  // Exercícios
   { id: "E1", text: "Complete a sequência: 2, 4, 8, 16, __", dimension: "I", type: "text" },
   { id: "E2", text: "Quantos símbolos '@' existem nesta sequência? @ # @ * & @ % * @ # & @ @ % $ @ ^ @", dimension: "C", type: "text" },
   { id: "E3", text: "Imagina que tens de criar um logótipo para um projeto de sustentabilidade. Que ideia desenharias?", dimension: "A", type: "textarea" }
@@ -65,7 +70,7 @@ function Questionario() {
 
   const handleScaleChange = (qId, value) => {
     setAnswers(prev => {
-      const current = prev[qId] === value ? null : value; // toggle
+      const current = prev[qId] === value ? null : value;
       return { ...prev, [qId]: current };
     });
   };
@@ -90,13 +95,13 @@ function Questionario() {
     <form className="questionario-container" onSubmit={handleSubmit}>
       <h1>Descobre o teu caminho profissional</h1>
 
-      {/* --- Informações Pessoais --- */}
-      <div className="question-block">
+      {/* Informações pessoais */}
+      <div className="question-block spacing">
         <label className="question-label">Nome:</label>
         <input type="text" name="nome" value={personal.nome} onChange={handlePersonalChange} required />
       </div>
 
-      <div className="question-block">
+      <div className="question-block spacing">
         <label className="question-label">Género:</label>
         <select name="genero" value={personal.genero} onChange={handlePersonalChange} required>
           <option value="">Seleciona...</option>
@@ -106,59 +111,36 @@ function Questionario() {
         </select>
       </div>
 
-      <div className="question-block">
+      <div className="question-block spacing">
         <label className="question-label">Data de nascimento:</label>
         <input type="date" name="nascimento" value={personal.nascimento} onChange={handlePersonalChange} required />
       </div>
 
-      {/* --- Perguntas --- */}
+      {/* Perguntas */}
       {questions.map(q => (
-        <div key={q.id} className="question-block">
+        <div key={q.id} className="question-block spacing">
           <label className="question-label">{q.id}. {q.text}</label>
 
           {q.type === "scale" && (
             <div className="scale-options">
               {scaleOptions.map(opt => (
-                <label key={opt.value}>
-                  <input
-                    type="radio"
-                    name={`q${q.id}`}
-                    checked={answers[q.id] === opt.value}
-                    onChange={() => handleScaleChange(q.id, opt.value)}
-                  />
-                  {opt.label}
-                </label>
+                <div key={opt.value} className="option-item">
+                  <label>
+                    <input
+                      type="radio"
+                      name={`q${q.id}`}
+                      checked={answers[q.id] === opt.value}
+                      onChange={() => handleScaleChange(q.id, opt.value)}
+                    />
+                    {opt.label}
+                  </label>
+                </div>
               ))}
             </div>
           )}
 
-          {q.type === "radio" && (
-            <input
-              type="radio"
-              name={`q${q.id}`}
-              value={q.text}
-              onChange={() => handleChange(q.id, q.text)}
-            />
-          )}
-
-          {q.type === "checkbox" && (
-            <input
-              type="checkbox"
-              name={`q${q.id}`}
-              value={q.text}
-              onChange={(e) => {
-                const prev = answers[q.id] || [];
-                if(e.target.checked) handleChange(q.id, [...prev, q.text]);
-                else handleChange(q.id, prev.filter(v => v !== q.text));
-              }}
-            />
-          )}
-
           {q.type === "text" && (
-            <input
-              type="text"
-              onChange={(e) => handleChange(q.id, e.target.value)}
-            />
+            <input type="text" onChange={(e) => handleChange(q.id, e.target.value)} />
           )}
 
           {q.type === "textarea" && (

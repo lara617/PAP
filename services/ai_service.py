@@ -1,42 +1,39 @@
-import csv
-import openai
-import os
-from dotenv import load_dotenv
+# services/ai_service.py
+from collections import defaultdict
 
-load_dotenv()  # lê o .env
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-def carregar_profissoes(area):
-    caminho = f"data/profissoes_{area.lower()}.csv"
-    profissoes = []
-    try:
-        with open(caminho, encoding="utf-8") as f:
-            leitor = csv.DictReader(f, delimiter=";")
-            for linha in leitor:
-                profissoes.append(linha)
-    except FileNotFoundError:
-        print(f"Arquivo {caminho} não encontrado.")
-    return profissoes
-
-def gerar_profissoes(respostas, area=None):
-    profissoes = carregar_profissoes(area) if area else []
-    profissoes_texto = "\n".join([f"{p['Profissao']} ({p['Genero_Menos_Representado']}): {p['Descricao']}" for p in profissoes])
-    prompt = f"""
-    És um orientador profissional inclusivo.
-    Perfil do utilizador: {respostas}
-    Lista de profissões: {profissoes_texto}
-    Sugere até 3 profissões mais compatíveis.
+def analisar_respostas(respostas, questions_list):
     """
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4-mini",
-            messages=[
-                {"role": "system", "content": "Tu és um orientador de carreiras inclusivo."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=600
-        )
-        return response['choices'][0]['message']['content']
-    except Exception as e:
-        print("Erro ao gerar profissões:", e)
-        return "Erro ao gerar profissões."
+    respostas: dict {id_pergunta: valor_selecionado (1-4 ou texto)}
+    questions_list: lista de todas as perguntas (com id e dimensão)
+    """
+    area_soma = defaultdict(int)
+    area_total = defaultdict(int)
+
+    # Percorre cada pergunta respondida
+    for q in questions_list:
+        qid = str(q['id'])
+        valor = respostas.get(qid)
+        if valor is None:
+            continue  # pergunta não respondida
+        dim = q['dimension']
+
+        # Se for escala (1-4), somamos para a dimensão correspondente
+        if q['type'] == "scale":
+            area_soma[dim] += valor
+            area_total[dim] += 4  # máximo possível para normalizar
+
+        # Se for select ou texto, podemos ignorar para percentagem ou tratar separadamente
+        # aqui só focamos nas escalas
+
+    # Calcula percentagens
+    percentagens = {}
+    for dim in area_soma:
+        percentagens[dim] = round((area_soma[dim] / area_total[dim]) * 100, 2)
+
+    # Determina área de maior destaque
+    top_area = max(percentagens, key=lambda k: percentagens[k])
+
+    return {
+        "percentagens": percentagens,
+        "top_area": top_area
+    }
