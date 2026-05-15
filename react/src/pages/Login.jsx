@@ -72,7 +72,7 @@ export default function Login() {
             onClick={() => setTab("cadastro")}
             type="button"
           >
-            Cadastro
+            Registo
           </button>
         </div>
 

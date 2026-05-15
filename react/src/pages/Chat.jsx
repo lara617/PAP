@@ -286,8 +286,8 @@ export default function Chat() {
 
       const totalUser = contarMensagensUser(finalMessages);
 
-      // quando chegar a 10 respostas do user cria resultado
-      if (totalUser >= 10) {
+      // quando chegar a 15 respostas do user cria resultado
+      if (totalUser >= 15) {
         const nomeResultado = await criarResultadoRiasec(
           user.uid,
           chatId,
@@ -301,6 +301,7 @@ export default function Chat() {
               `A tua análise vocacional está pronta.\n\n` +
               `Consulta a área Resultados.\n` +
               `Nome: ${nomeResultado}`,
+              
             createdAt: new Date().toISOString(),
           };
 
@@ -472,7 +473,7 @@ export default function Chat() {
         <main style={styles.chatArea}>
           <div style={styles.header}>
             <div>
-              <h1 style={styles.title}>Chat IA</h1>
+              <h1 style={styles.title}>ProfChoice.IA</h1>
               <p style={styles.subtitle}>
                 Orientação vocacional inteligente
               </p>
@@ -516,7 +517,7 @@ export default function Chat() {
             {loading && (
               <div style={{ display: "flex" }}>
                 <div style={{ ...styles.bubble, ...styles.botBubble }}>
-                  <div style={styles.botLabel}>IA</div>
+                  <div style={styles.botLabel}>ProfChoice.IA</div>
 
                   <div style={styles.typing}>
                     <span style={styles.typingDot}></span>
